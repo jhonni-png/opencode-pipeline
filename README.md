@@ -1,21 +1,111 @@
 # Pipeline multiagente para OpenCode
 
-Cuatro agentes especializados que se ejecutan en cadena, cada uno con el mejor modelo **100 % gratuito** disponible en las cuatro APIs solicitadas. Todo el contenido (agentes, comandos y artefactos) está en **español**.
+Plantilla reutilizable: cuatro agentes especializados que se ejecutan en cadena, cada uno con el mejor modelo **100 % gratuito** de las APIs de Groq, OpenRouter, Gemini y NVIDIA NIM. Todo (agentes, comandos y artefactos) está en **español**.
 
-Repositorio: **jhonni-png/opencode-pipeline** (privado). Cuenta de GitHub conectada mediante `gh` CLI (`jhonni-png`).
+**Este repositorio no contiene ninguna API key.** El asistente de instalación pide las claves propias de quien lo use y las mantiene únicamente en el entorno del proceso.
 
-## Roles y modelos seleccionados
+## Modelos seleccionados
 
-| Etapa | Agente | Proveedor | Modelo | Por qué se eligió |
+| Etapa | Agente | Proveedor | Modelo gratuito | Por qué se eligió |
 | --- | --- | --- | --- | --- |
 | 1 | `planificador` | **OpenRouter** | `nvidia/nemotron-3-ultra-550b-a55b:free` | Modelo de razonamiento y orquestación: 550 B totales / 55 B activos, 1 M de contexto, `$0/M`. Pensado para flujos agénticos de varios pasos y planificación. |
 | 2 | `arquitecto` | **Gemini** | `gemini-3.5-flash-lite` | 1 M de contexto, tool calling y *thinking*. Recomendado por Google para tareas de subagente. Consulta tus límites del plan gratuito en AI Studio (varían por proyecto/región). |
 | 3 | `constructor` | **Groq** | `openai/gpt-oss-120b` | ~500 tok/s, 131 K de contexto, soporte de herramientas y plan gratuito (30 req/min, 1.000 req/día). Ideal para escribir código rápido. |
 | 4 | `auditor` | **NVIDIA NIM** | `deepseek-ai/deepseek-v4.1-flash` | Razonamiento profundo, 1 M de contexto, function calling. Excelente para revisión crítica (DeepSWE 74.2, Terminal-Bench 2.1 90.6). |
 
-El `director` (agente primario) usa el mismo modelo de OpenRouter por defecto y solo coordina; no hace el trabajo de las etapas.
+El `director` (agente primario) usa el modelo de OpenRouter por defecto y solo coordina; no ejecuta las etapas.
 
-> Los catálogos gratuitos cambian con frecuencia. Si un modelo deja de estar disponible, revisa `/models` dentro de OpenCode y ajusta el `modelID` en `.opencode/opencode.jsonc`.
+> Los catálogos gratuitos cambian con frecuencia. Si un modelo deja de estar disponible, ejecuta `/models` y ajusta el `modelID` en `.opencode/opencode.jsonc`.
+
+## Instalación
+
+### 1. Clonar
+
+```bash
+git clone https://github.com/jhonni-png/opencode-pipeline.git
+cd opencode-pipeline
+```
+
+### 2. Ejecutar el asistente de credenciales
+
+Te preguntará por tus cuatro claves con entrada oculta, las exportará solo en memoria y arrancará OpenCode.
+
+**Windows (PowerShell):**
+
+```powershell
+.\setup.ps1
+```
+
+Si PowerShell bloquea la ejecución de scripts:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+```
+
+**macOS / Linux / Git Bash:**
+
+```bash
+chmod +x setup.sh && ./setup.sh
+```
+
+Para solo cargar las claves en la sesión actual sin arrancar OpenCode: `.\setup.ps1 -SkipLaunch` o `./setup.sh --no-launch`. Si una variable ya está configurada, el asistente pregunta si deseas conservarla.
+
+Obtén tus claves gratis aquí: [Groq](https://console.groq.com/keys) · [OpenRouter](https://openrouter.ai/keys) · [Google AI Studio](https://aistudio.google.com/apikey) · [NVIDIA NIM](https://build.nvidia.com/).
+
+### 3. (Opcional) Instalar de forma global
+
+Así el pipeline queda disponible desde cualquier directorio. Hazlo **después** de cargar las claves.
+
+**Windows (PowerShell):**
+
+```powershell
+$dst = Join-Path $HOME ".config\opencode"
+New-Item -ItemType Directory -Force -Path "$dst\agents","$dst\commands" | Out-Null
+Copy-Item .\.opencode\opencode.jsonc "$dst\opencode.jsonc" -Force
+Copy-Item .\.opencode\agents\*.md "$dst\agents\" -Force
+Copy-Item .\.opencode\commands\*.md "$dst\commands\" -Force
+```
+
+**macOS / Linux:**
+
+```bash
+dst="$HOME/.config/opencode"; mkdir -p "$dst/agents" "$dst/commands"
+cp .opencode/opencode.jsonc "$dst/opencode.jsonc"
+cp .opencode/agents/*.md "$dst/agents/"
+cp .opencode/commands/*.md "$dst/commands/"
+```
+
+## Seguridad de credenciales
+
+- No hay claves en los archivos: la configuración usa `env: [...]` y sustituciones `{env:VAR}`.
+- La resolución ocurre en memoria, dentro del proceso de OpenCode. Nada se escribe en disco ni se envía a ningún servicio.
+- `.gitignore` bloquea `.env`, `*.key`, `*.pem` y carpetas de secretos. `.env.example` solo lista los nombres de las variables, sin valores.
+- No se usa `setx`: persistiría las claves en texto plano en el registro de Windows.
+- Para comprobar qué variables hay, sin mostrar sus valores:
+
+```powershell
+Get-ChildItem env: | Where-Object Name -match 'API_KEY' | Select-Object Name
+```
+
+```bash
+env | grep -E 'API_KEY=' | cut -d= -f1
+```
+
+## Uso
+
+Dentro de OpenCode, verifica los modelos disponibles:
+
+```text
+/models
+```
+
+Deben aparecer `groq/gpt-oss-120b`, `openrouter/nemotron-ultra-free`, `gemini/flash-lite` y `nim/deepseek-v4.1-flash`. Luego lanza el pipeline:
+
+```text
+/pipeline Crea una API REST en Node para gestionar tareas con SQLite
+```
+
+También puedes pedírselo en lenguaje natural al agente `director`; el comando solo fija el agente y el formato de la instrucción.
 
 ## Flujo
 
@@ -28,74 +118,23 @@ El `director` (agente primario) usa el mismo modelo de OpenRouter por defecto y 
    └─ 4. auditor       →  .opencode/pipeline/<slug>/04-auditoria.md
 ```
 
-Cada etapa espera el informe de la anterior y verifica su artefacto antes de continuar. Si una falla, el pipeline se detiene.
-
-## Credenciales: solo variables de entorno
-
-**No hay ninguna clave guardada en archivos.** La configuración usa `{env:VAR}` y la lista `env`, de modo que OpenCode lee las credenciales del proceso. `.env.example` contiene únicamente los nombres de las variables.
-
-Obtén las claves gratis en: [Groq](https://console.groq.com/keys) · [OpenRouter](https://openrouter.ai/keys) · [Google AI Studio](https://aistudio.google.com/apikey) · [NVIDIA NIM](https://build.nvidia.com/).
-
-### Inyección segura desde la terminal (PowerShell)
-
-Pega esto en la **misma sesión** en la que arrancarás OpenCode. `Read-Host -AsSecureString` evita que la clave quede visible en pantalla ni en el historial:
-
-```powershell
-function Set-SecretEnv {
-    param([string]$Name, [string]$Prompt)
-    $secure = Read-Host $Prompt -AsSecureString
-    $bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
-    try {
-        [System.Environment]::SetEnvironmentVariable(
-            $Name,
-            [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr),
-            'Process'
-        )
-    } finally {
-        [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
-    }
-}
-
-Set-SecretEnv GROQ_API_KEY        "API key de Groq"
-Set-SecretEnv OPENROUTER_API_KEY  "API key de OpenRouter"
-Set-SecretEnv GEMINI_API_KEY      "API key de Gemini"
-Set-SecretEnv NVIDIA_API_KEY      "API key de NVIDIA NIM"
-
-# --standalone hace que la TUI y el servidor compartan este mismo entorno.
-opencode --standalone
-```
-
-En PowerShell 7 también puedes usar `$env:GROQ_API_KEY = Read-Host "Groq" -MaskInput`.
-
-Si prefieres el servicio en segundo plano, reinícialo desde una sesión que ya tenga las variables exportadas (`opencode service restart`). Evita `opencode service set env ...` si no quieres persistir valores en la configuración del servicio.
-
-### Comprobación rápida
-
-Dentro de OpenCode, ejecuta `/models`: deben aparecer `groq/gpt-oss-120b`, `openrouter/nemotron-ultra-free`, `gemini/flash-lite` y `nim/deepseek-v4.1-flash`.
-
-## Uso
-
-```text
-/pipeline Crea una API REST en Node para gestionar tareas con SQLite
-```
-
-También puedes abrir OpenCode y pedírselo al agente `director` en lenguaje natural; el comando solo fija el agente y el formato de la instrucción.
+Cada etapa espera el informe de la anterior y verifica su artefacto antes de continuar. Si una etapa falla, el pipeline se detiene y explica el error.
 
 ## Estructura
 
 ```text
+setup.ps1                 # asistente de credenciales para Windows
+setup.sh                  # asistente de credenciales para macOS/Linux
 .opencode/
-├── opencode.jsonc            # proveedores, modelos y agente por defecto
+├── opencode.jsonc        # proveedores, modelos y agente por defecto
 ├── agents/
-│   ├── director.md           # orquestador (primary)
-│   ├── planificador.md       # etapa 1
-│   ├── arquitecto.md         # etapa 2
-│   ├── constructor.md        # etapa 3
-│   └── auditor.md            # etapa 4
+│   ├── director.md       # orquestador (primary)
+│   ├── planificador.md   # etapa 1
+│   ├── arquitecto.md     # etapa 2
+│   ├── constructor.md    # etapa 3
+│   └── auditor.md        # etapa 4
 └── commands/
-    └── pipeline.md           # comando /pipeline
-.env.example                  # solo nombres de variables
-.gitignore                    # bloquea .env y secretos
+    └── pipeline.md       # comando /pipeline
+.env.example              # solo nombres de variables
+.gitignore                # bloquea .env y secretos
 ```
-
-La misma configuración se instala de forma global en `~/.config/opencode/`, así que el pipeline está disponible desde cualquier directorio.
