@@ -9,7 +9,7 @@ Repositorio: **jhonni-png/opencode-pipeline** (privado). Cuenta de GitHub conect
 | Etapa | Agente | Proveedor | Modelo | Por qué se eligió |
 | --- | --- | --- | --- | --- |
 | 1 | `planificador` | **OpenRouter** | `nvidia/nemotron-3-ultra-550b-a55b:free` | Modelo de razonamiento y orquestación: 550 B totales / 55 B activos, 1 M de contexto, `$0/M`. Pensado para flujos agénticos de varios pasos y planificación. |
-| 2 | `arquitecto` | **Gemini** | `gemini-3.5-flash-lite` | 1 M de contexto, tool calling y *thinking*. Recomendado por Google para tareas de subagente; el plan gratuito cubre este uso. |
+| 2 | `arquitecto` | **Gemini** | `gemini-3.5-flash-lite` | 1 M de contexto, tool calling y *thinking*. Recomendado por Google para tareas de subagente. Consulta tus límites del plan gratuito en AI Studio (varían por proyecto/región). |
 | 3 | `constructor` | **Groq** | `openai/gpt-oss-120b` | ~500 tok/s, 131 K de contexto, soporte de herramientas y plan gratuito (30 req/min, 1.000 req/día). Ideal para escribir código rápido. |
 | 4 | `auditor` | **NVIDIA NIM** | `deepseek-ai/deepseek-v4.1-flash` | Razonamiento profundo, 1 M de contexto, function calling. Excelente para revisión crítica (DeepSWE 74.2, Terminal-Bench 2.1 90.6). |
 
