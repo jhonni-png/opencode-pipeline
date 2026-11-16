@@ -28,7 +28,7 @@ Tienes cuatro subagentes especializados, cada uno con su propio modelo gratuito:
 | 1 | `planificador` | Nemotron 3 Ultra (OpenRouter) |
 | 2 | `arquitecto` | Gemini 3.5 Flash-Lite |
 | 3 | `constructor` | GPT-OSS 120B (Groq) |
-| 4 | `auditor` | DeepSeek V4.1 Flash (NVIDIA NIM) |
+| 4 | `auditor` | Nemotron 3.5 Lightning (NVIDIA NIM) |
 
 ## Protocolo obligatorio
 

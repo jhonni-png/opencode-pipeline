@@ -88,17 +88,16 @@
     // ---------------------------------------------------------------
     "nim": {
       "name": "NVIDIA NIM (free trial API)",
-      "env": ["NVIDIA_API_KEY"],
+      "env": ["NVIDIA_NIM_API_KEY", "NVIDIA_API_KEY"],
       "package": "@opencode/ai/providers/openai-compatible",
       "settings": {
-        "baseURL": "https://integrate.api.nvidia.com/v1",
-        "apiKey": "{env:NVIDIA_API_KEY}"
+        "baseURL": "https://integrate.api.nvidia.com/v1"
       },
       "models": {
-        "deepseek-v4.1-flash": {
-          "modelID": "deepseek-ai/deepseek-v4.1-flash",
-          "name": "DeepSeek V4.1 Flash (NVIDIA NIM gratis)",
-          "family": "deepseek",
+        "nemotron-3.5-lightning": {
+          "modelID": "nvidia/nemotron-3.5-lightning-30b-a3b",
+          "name": "Nemotron 3.5 Lightning 30B (NVIDIA NIM gratis)",
+          "family": "nemotron",
           "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
           "limit": { "context": 1048576, "output": 65536 },
           "cost": { "input": 0, "output": 0 }

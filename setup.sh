@@ -29,6 +29,10 @@ for key in "${KEYS[@]}"; do
   echo
   if [[ -n "$value" ]]; then
     export "$key=$value"
+    # NVIDIA publica su clave como NVIDIA_API_KEY; aceptamos ambos nombres.
+    if [[ "$key" == "NVIDIA_NIM_API_KEY" ]]; then
+      export NVIDIA_API_KEY="$value"
+    fi
     echo "  OK"
   else
     echo "  Vacio: no se cambia nada."

@@ -11,7 +11,7 @@ Plantilla reutilizable: cuatro agentes especializados que se ejecutan en cadena,
 | 1 | `planificador` | **OpenRouter** | `nvidia/nemotron-3-ultra-550b-a55b:free` | Modelo de razonamiento y orquestación: 550 B totales / 55 B activos, 1 M de contexto, `$0/M`. Pensado para flujos agénticos de varios pasos y planificación. |
 | 2 | `arquitecto` | **Gemini** | `gemini-3.5-flash-lite` | 1 M de contexto, tool calling y *thinking*. Recomendado por Google para tareas de subagente. Consulta tus límites del plan gratuito en AI Studio (varían por proyecto/región). |
 | 3 | `constructor` | **Groq** | `openai/gpt-oss-120b` | ~500 tok/s, 131 K de contexto, soporte de herramientas y plan gratuito (30 req/min, 1.000 req/día). Ideal para escribir código rápido. |
-| 4 | `auditor` | **NVIDIA NIM** | `deepseek-ai/deepseek-v4.1-flash` | Razonamiento profundo, 1 M de contexto, function calling. Excelente para revisión crítica (DeepSWE 74.2, Terminal-Bench 2.1 90.6). |
+| 4 | `auditor` | **NVIDIA NIM** | `nvidia/nemotron-3.5-lightning-30b-a3b` | Modelo ágil de razonamiento y tareas agénticas, 1 M de contexto y tool calling. Responde en ~1 s, frente a los >90 s del modelo grande de DeepSeek en el plan gratuito. |
 
 El `director` (agente primario) usa el modelo de OpenRouter por defecto y solo coordina; no ejecuta las etapas.
 
@@ -51,6 +51,8 @@ chmod +x setup.sh && ./setup.sh
 Para solo cargar las claves en la sesión actual sin arrancar OpenCode: `.\setup.ps1 -SkipLaunch` o `./setup.sh --no-launch`. Si una variable ya está configurada, el asistente pregunta si deseas conservarla.
 
 Obtén tus claves gratis aquí: [Groq](https://console.groq.com/keys) · [OpenRouter](https://openrouter.ai/keys) · [Google AI Studio](https://aistudio.google.com/apikey) · [NVIDIA NIM](https://build.nvidia.com/).
+
+Para NVIDIA se aceptan ambos nombres, `NVIDIA_NIM_API_KEY` y `NVIDIA_API_KEY`; el asistente rellena los dos con el mismo valor.
 
 ### 3. (Opcional) Instalar de forma global
 
@@ -99,7 +101,7 @@ Dentro de OpenCode, verifica los modelos disponibles:
 /models
 ```
 
-Deben aparecer `groq/gpt-oss-120b`, `openrouter/nemotron-ultra-free`, `gemini/flash-lite` y `nim/deepseek-v4.1-flash`. Luego lanza el pipeline:
+Deben aparecer `groq/gpt-oss-120b`, `openrouter/nemotron-ultra-free`, `gemini/flash-lite` y `nim/nemotron-3.5-lightning`. Luego lanza el pipeline:
 
 ```text
 /pipeline Crea una API REST en Node para gestionar tareas con SQLite

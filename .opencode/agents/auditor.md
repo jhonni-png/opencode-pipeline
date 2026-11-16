@@ -1,7 +1,7 @@
 ---
 description: Etapa 4 - revisión crítica de los cambios; solo lectura, sin modificar código.
 mode: subagent
-model: nim/deepseek-v4.1-flash
+model: nim/nemotron-3.5-lightning
 permissions:
   - action: "*"
     resource: "*"

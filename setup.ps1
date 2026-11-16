@@ -37,6 +37,10 @@ foreach ($name in $keys) {
             continue
         }
         [Environment]::SetEnvironmentVariable($name, $valor, 'Process')
+        # NVIDIA publica su clave como NVIDIA_API_KEY; aceptamos ambos nombres.
+        if ($name -eq 'NVIDIA_NIM_API_KEY') {
+            [Environment]::SetEnvironmentVariable('NVIDIA_API_KEY', $valor, 'Process')
+        }
         Write-Host '  OK' -ForegroundColor Green
     }
     finally {
