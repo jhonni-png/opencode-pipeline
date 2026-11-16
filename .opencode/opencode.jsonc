@@ -1,0 +1,109 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Modelo por defecto = orquestador (planificación y razonamiento, 100% Gratis)
+  "model": "openrouter/nemotron-ultra-free",
+  "default_agent": "director",
+
+  "providers": {
+    // ---------------------------------------------------------------
+    // GROQ  ->  etapa CONSTRUCTOR (velocidad + herramientas)
+    // Key inyectada desde terminal: $env:GROQ_API_KEY
+    // ---------------------------------------------------------------
+    "groq": {
+      "name": "Groq (free tier)",
+      "env": ["GROQ_API_KEY"],
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "https://api.groq.com/openai/v1",
+        "apiKey": "{env:GROQ_API_KEY}"
+      },
+      "models": {
+        "gpt-oss-120b": {
+          "modelID": "openai/gpt-oss-120b",
+          "name": "GPT-OSS 120B (Groq gratis)",
+          "family": "gpt-oss",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 131072, "output": 65536 },
+          "cost": { "input": 0, "output": 0 }
+        },
+        "gpt-oss-20b": {
+          "modelID": "openai/gpt-oss-20b",
+          "name": "GPT-OSS 20B (Groq gratis, respaldo)",
+          "family": "gpt-oss",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 131072, "output": 65536 },
+          "cost": { "input": 0, "output": 0 }
+        }
+      }
+    },
+
+    // ---------------------------------------------------------------
+    // OPENROUTER -> etapa PLANIFICADOR (razonamiento + orquestación, 1M ctx)
+    // Key inyectada desde terminal: $env:OPENROUTER_API_KEY
+    // Se conserva el paquete nativo de OpenRouter (no se sobrescribe).
+    // ---------------------------------------------------------------
+    "openrouter": {
+      "env": ["OPENROUTER_API_KEY"],
+      "models": {
+        "nemotron-ultra-free": {
+          "modelID": "nvidia/nemotron-3-ultra-550b-a55b:free",
+          "name": "Nemotron 3 Ultra 550B (OpenRouter gratis)",
+          "family": "nemotron",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1000000, "output": 65536 },
+          "cost": { "input": 0, "output": 0 }
+        }
+      }
+    },
+
+    // ---------------------------------------------------------------
+    // GEMINI -> etapa ARQUITECTO (diseño, 1M ctx, subagentes económicos)
+    // Key inyectada desde terminal: $env:GEMINI_API_KEY
+    // Endpoint compatible con OpenAI de la Gemini API.
+    // ---------------------------------------------------------------
+    "gemini": {
+      "name": "Gemini API (free tier)",
+      "env": ["GEMINI_API_KEY"],
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "https://generativelanguage.googleapis.com/v1beta/openai/",
+        "apiKey": "{env:GEMINI_API_KEY}"
+      },
+      "models": {
+        "flash-lite": {
+          "modelID": "gemini-3.5-flash-lite",
+          "name": "Gemini 3.5 Flash-Lite (gratis)",
+          "family": "gemini",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 65536 },
+          "cost": { "input": 0, "output": 0 }
+        }
+      }
+    },
+
+    // ---------------------------------------------------------------
+    // NVIDIA NIM -> etapa AUDITOR (razonamiento profundo, 1M ctx)
+    // Key inyectada desde terminal: $env:NVIDIA_API_KEY
+    // ---------------------------------------------------------------
+    "nim": {
+      "name": "NVIDIA NIM (free trial API)",
+      "env": ["NVIDIA_API_KEY"],
+      "package": "@opencode/ai/providers/openai-compatible",
+      "settings": {
+        "baseURL": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "{env:NVIDIA_API_KEY}"
+      },
+      "models": {
+        "deepseek-v4.1-flash": {
+          "modelID": "deepseek-ai/deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash (NVIDIA NIM gratis)",
+          "family": "deepseek",
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "limit": { "context": 1048576, "output": 65536 },
+          "cost": { "input": 0, "output": 0 }
+        }
+      }
+    }
+  }
+}

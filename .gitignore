@@ -1,0 +1,16 @@
+# Nunca versionar secretos ni entornos locales
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+credentials/
+
+# Artefactos generados por el pipeline (opcional: comenta estas líneas si quieres versionarlos)
+# .opencode/pipeline/
+
+# Ruido de sistema
+.DS_Store
+Thumbs.db
+node_modules/
