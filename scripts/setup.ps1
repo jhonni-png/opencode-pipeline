@@ -3,11 +3,11 @@
 # Nunca escribe claves en disco, variables persistentes ni el registro de Windows.
 #
 # Uso:
-#   .\setup.ps1                 # pedir claves y arrancar OpenCode
-#   .\setup.ps1 -SkipLaunch     # solo cargar claves en la sesion actual
+#   .\scripts\setup.ps1        # pedir claves y arrancar OpenCode
+#   .\scripts\setup.ps1 -SkipLaunch # solo cargar claves en la sesion actual
 #
 # Si PowerShell bloquea el script:
-#   powershell -ExecutionPolicy Bypass -File .\setup.ps1
+#   powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 
 param([switch]$SkipLaunch)
 

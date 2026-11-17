@@ -33,22 +33,22 @@ Te preguntará por tus cuatro claves con entrada oculta, las exportará solo en 
 **Windows (PowerShell):**
 
 ```powershell
-.\setup.ps1
+.\scripts\setup.ps1
 ```
 
 Si PowerShell bloquea la ejecución de scripts:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 ```
 
 **macOS / Linux / Git Bash:**
 
 ```bash
-chmod +x setup.sh && ./setup.sh
+chmod +x scripts/setup.sh && ./scripts/setup.sh
 ```
 
-Para solo cargar las claves en la sesión actual sin arrancar OpenCode: `.\setup.ps1 -SkipLaunch` o `./setup.sh --no-launch`. Si una variable ya está configurada, el asistente pregunta si deseas conservarla.
+Para solo cargar las claves en la sesión actual sin arrancar OpenCode: `.\scripts\setup.ps1 -SkipLaunch` o `./scripts/setup.sh --no-launch`. Si una variable ya está configurada, el asistente pregunta si deseas conservarla.
 
 Obtén tus claves gratis aquí: [Groq](https://console.groq.com/keys) · [OpenRouter](https://openrouter.ai/keys) · [Google AI Studio](https://aistudio.google.com/apikey) · [NVIDIA NIM](https://build.nvidia.com/).
 
@@ -125,18 +125,30 @@ Cada etapa espera el informe de la anterior y verifica su artefacto antes de con
 ## Estructura
 
 ```text
-setup.ps1                 # asistente de credenciales para Windows
-setup.sh                  # asistente de credenciales para macOS/Linux
-.opencode/
-├── opencode.jsonc        # proveedores, modelos y agente por defecto
-├── agents/
-│   ├── director.md       # orquestador (primary)
-│   ├── planificador.md   # etapa 1
-│   ├── arquitecto.md     # etapa 2
-│   ├── constructor.md    # etapa 3
-│   └── auditor.md        # etapa 4
-└── commands/
-    └── pipeline.md       # comando /pipeline
-.env.example              # solo nombres de variables
-.gitignore                # bloquea .env y secretos
+opencode-pipeline/
+├── .opencode/
+│   ├── opencode.jsonc        # proveedores, modelos y agente por defecto
+│   ├── agents/
+│   │   ├── director.md       # orquestador (primary)
+│   │   ├── planificador.md   # etapa 1
+│   │   ├── arquitecto.md     # etapa 2
+│   │   ├── constructor.md    # etapa 3
+│   │   └── auditor.md        # etapa 4
+│   └── commands/
+│       └── pipeline.md       # comando /pipeline
+├── scripts/
+│   ├── setup.ps1             # asistente de credenciales para Windows
+│   └── setup.sh              # asistente de credenciales para macOS/Linux
+├── .env.example              # solo nombres de variables
+├── .gitignore                # bloquea .env y secretos
+└── README.md
 ```
+
+Ejecuta los scripts desde la raíz del repositorio, para que OpenCode encuentre la carpeta `.opencode/`.
+
+## Repositorios relacionados
+
+Este repositorio es la **infraestructura base** del pipeline: solo la configuración de los agentes, sin interfaz gráfica.
+
+- [**oficina-de-agentes-**](https://github.com/jhonni-png/oficina-de-agentes-): el producto final. Una oficina 3D que usa este mismo pipeline y lo visualiza en tiempo real.
+- [**claude_agents-**](https://github.com/jhonni-png/claude_agents-): la variante con los mismos cuatro agentes en n8n, expuestos a Claude vía MCP.
