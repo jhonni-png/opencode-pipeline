@@ -4,8 +4,8 @@
 # Nunca escribe claves en disco ni en ficheros de perfil.
 #
 # Uso:
-#   chmod +x setup.sh && ./setup.sh      # pedir claves y arrancar OpenCode
-#   ./setup.sh --no-launch               # solo cargar claves en la sesion actual
+#   chmod +x scripts/setup.sh && ./scripts/setup.sh # pedir claves y arrancar OpenCode
+#   ./scripts/setup.sh --no-launch           # solo cargar claves en la sesion actual
 
 set -euo pipefail
 
