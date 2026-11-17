@@ -139,8 +139,11 @@ opencode-pipeline/
 ├── scripts/
 │   ├── setup.ps1             # asistente de credenciales para Windows
 │   └── setup.sh              # asistente de credenciales para macOS/Linux
+├── docs/
+│   └── personalizar.md       # cambiar modelos, proveedores o añadir agentes
 ├── .env.example              # solo nombres de variables
 ├── .gitignore                # bloquea .env y secretos
+├── LICENSE                   # MIT
 └── README.md
 ```
 
@@ -148,7 +151,11 @@ Ejecuta los scripts desde la raíz del repositorio, para que OpenCode encuentre 
 
 ## Repositorios relacionados
 
-Este repositorio es la **infraestructura base** del pipeline: solo la configuración de los agentes, sin interfaz gráfica.
+Este repositorio es la **infraestructura base** del pipeline: solo la configuración de los agentes, sin interfaz gráfica. Es la **fuente única** de los agentes y los modelos: `oficina-de-agentes-` los sincroniza desde aquí (`npm run sync-agents`), así que si cambias un modelo, cámbialo en este repo. Guía en [`docs/personalizar.md`](docs/personalizar.md).
 
 - [**oficina-de-agentes-**](https://github.com/jhonni-png/oficina-de-agentes-): el producto final. Una oficina 3D que usa este mismo pipeline y lo visualiza en tiempo real.
 - [**claude_agents-**](https://github.com/jhonni-png/claude_agents-): la variante con los mismos cuatro agentes en n8n, expuestos a Claude vía MCP.
+
+## Licencia
+
+Distribuido bajo licencia [MIT](LICENSE).
